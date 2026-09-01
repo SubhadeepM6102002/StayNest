@@ -3,6 +3,8 @@ const app = express();
 const mongoose = require("mongoose");
 
 require("dotenv").config();
+console.log("SECRET exists:", !!process.env.SECRET);
+console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
 const dbUrl = process.env.ATLASDB_URL;
 
 const Listing = require("./models/listing.js");
