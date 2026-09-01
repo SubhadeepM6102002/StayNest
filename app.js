@@ -1,3 +1,5 @@
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -40,7 +42,7 @@ const sessionOptions = {
   store,
   secret: process.env.SECRET,
   resave: false,
-  saveuninitialized: true,
+  saveUninitialized: true,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -76,7 +78,6 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   next();
 });
-
 
 // Passport
 app.use(passport.initialize());
@@ -115,7 +116,6 @@ const isOwner = async (req, res, next) => {
 };
 // User Routes
 app.use("/", userRouter);
-
 
 // ================= DEMO USER =================
 
@@ -180,15 +180,17 @@ app.post(
   isLoggedIn,
   wrapAsync(async (req, res) => {
     const newListing = new Listing(req.body.listing);
-
     newListing.owner = req.user._id;
 
-    await newListing.save();
+    if (!newListing.image.url || newListing.image.url.trim() === "") {
+      newListing.image.url =
+        "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=800&q=60";
+    }
 
+    await newListing.save();
     res.redirect("/listings");
   }),
 );
-
 app.get(
   "/listings/:id/edit",
   isLoggedIn,
