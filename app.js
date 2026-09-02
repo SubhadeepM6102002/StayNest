@@ -42,12 +42,11 @@ const sessionOptions = {
   store,
   secret: process.env.SECRET,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: {
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: true,
   },
 };
 
@@ -72,7 +71,6 @@ app.engine("ejs", ejsmate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 // Session
-app.set("trust proxy", 1);
 app.use(session(sessionOptions));
 app.use(flash());
 app.use((req, res, next) => {
@@ -82,8 +80,10 @@ app.use((req, res, next) => {
 });
 
 // Passport
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
